@@ -1,0 +1,2 @@
+gcc node_monitor.c -o node_monitor -lm -lpthread
+#gcc exp_coap_put.c -o exp_coap_put -lm -lpthread

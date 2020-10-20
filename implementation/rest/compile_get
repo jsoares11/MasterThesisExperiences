@@ -1,0 +1,2 @@
+gcc exp_rest_get.c -o exp_rest_get -lm
+#gcc exp_rest_put.c -o exp_rest_put

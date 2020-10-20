@@ -1,0 +1,2 @@
+gcc exp_mqtt_sub.c -o exp_mqtt_sub
+#gcc exp_mqtt_put.c -o exp_mqtt_put

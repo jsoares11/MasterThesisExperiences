@@ -1,0 +1,2 @@
+gcc exp_coap_get.c -o exp_coap_get -lm -lpthread
+#gcc exp_coap_put.c -o exp_coap_put
