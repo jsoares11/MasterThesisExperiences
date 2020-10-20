@@ -1,0 +1,62 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: mosquitto-in
+    name: mosquitto-cs-in
+  spec:
+    clusterIP: None
+    type: LoadBalancer
+    ports:
+    - name: clientin
+      port: 1883
+      protocol: TCP
+      targetPort: 1883
+    selector:
+      app: mosquitto-in
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: mosquitto-deployment-in
+    labels:
+      app: mosquitto-in
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: mosquitto-in
+    template:
+      metadata:
+        labels:
+          app: mosquitto-in
+      spec:
+        containers:
+         - name: mosquitto-in
+           command:
+           - sh
+           - -c
+           - "  echo 'set_tcp_nodelay true' >> mosquitto-local.conf; \
+    echo 'user mosquitto' >> mosquitto-local.conf; \
+    echo 'persistence true' >> mosquitto-local.conf; \
+    echo 'max_inflight_messages 1' >> mosquitto-local.conf;  \
+    echo 'max_queued_messages 10' >> mosquitto-local.conf;  \
+    echo 'autosave_interval 1800' >> mosquitto-local.conf;  \
+    ./start-mqtt-rep3 in iot kafka-hs.kafka.svc.cluster.local:9093 zk-cs.kafka.svc.cluster.local:2181 1883"
+           image: josesoares/proxy
+           ports:
+           - containerPort: 1883
+#         - key: node.kubernetes.io/unreachable
+#           effect: NoExecute
+#           tolerationSeconds: 10
+#         - key: node.kubernetes.io/not-ready
+#           effect: NoExecute
+#           tolerationSeconds: 10
+kind: List
+metadata: {}

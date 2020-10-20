@@ -1,0 +1,42 @@
+#!/bin/bash
+
+usage (){
+	echo "USAGE: start-coap-rep3 <CoAP resource> <Kafka broker> <Zookeeper Server>"
+	echo "./start-coap-rep3 <resource> <address>:<port> <topic> <address>:<port> <address>:<port>"
+	echo ""
+}
+
+if [ "$1" != "" ]; then
+    echo "CoAP resource: " $1 
+else
+    usage
+    echo ""
+    echo "Please introduce the resource that will be used"
+    exit 1
+fi
+
+if [ "$2" != "" ]; then
+    echo "Kafka Broker: " $2 
+else
+    usage
+    echo ""
+    echo "Please introduce the Kafka broker <address>:<port>"    
+    exit 1
+fi
+
+if [ "$3" != "" ]; then
+    echo "Zookeeper Server: " $3 
+else
+    usage
+    echo ""
+    echo "Please introduce the Zookeeper Server <address>:<port>"
+    exit 1
+fi
+
+sleep 30
+./kafka_2.12-2.5.0/bin/kafka-topics.sh --create --zookeeper $3 --replication-factor 3 --partitions 1 --topic $1
+(./libcoap/examples/coap-server) & (./Kafka-proxy/kafka-proxy in $2 $1)
+
+
+
+

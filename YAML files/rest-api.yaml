@@ -1,0 +1,51 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: rest
+    name: rest-cs
+  spec:
+    clusterIP: None
+    type: LoadBalancer
+    ports:
+    - name: clientin
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+    selector:
+      app: rest
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: rest-deployment
+    labels:
+      app: rest
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: rest
+    template:
+      metadata:
+        labels:
+          app: rest
+      spec:
+        containers:
+         - name: rest
+           command:
+           - sh
+           - -c
+           - "tail -f /dev/null"
+           #- "./start-rest-rep3 iot kafka-hs.kafka.svc.cluster.local:9093 zk-cs.kafka.svc.cluster.local:2181"
+           image: josesoares/proxy
+           ports:
+           - containerPort: 8000
+kind: List
+metadata: {}

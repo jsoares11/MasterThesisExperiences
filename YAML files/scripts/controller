@@ -1,0 +1,89 @@
+#!/bin/bash
+
+usage (){
+	echo "USAGE: ./controller <method> <topic> <rep_factor> <num_part> <zookeeper>"
+	echo ""
+}
+
+if [ "$1" != "" ]; then
+    echo "Method: " $1 
+else
+    usage
+    echo ""
+    echo "Please introduce the method that will be used (create, list or delete)"
+    exit 1
+fi
+
+if [ "$2" != "" ]; then
+    echo "Topic: " $2 
+else
+    usage
+    echo ""
+    echo "Please introduce the Topic to be used"    
+    exit 1
+fi
+
+if [ "$3" != "" ]; then
+    echo "Replication Factor: " $3
+else
+    usage
+    echo ""
+    echo "Please introduce the replication Factor to be used"    
+    exit 1
+fi
+
+if [ "$4" != "" ]; then
+    echo "Number of Partitions: " $4
+else
+    usage
+    echo ""
+    echo "Please introduce the Number of Partitions:"
+    exit 1
+fi
+
+if [ "$5" != "" ]; then
+    echo "Zookeeper Server: " $5 
+else
+    usage
+    echo ""
+    echo "Please introduce the Zookeeper Server <address>:<port>"
+    exit 1
+fi
+
+echo
+echo
+
+if [ "$1" == "create" ]; then
+#    echo "create"
+#    sleep 30
+    ./kafka_2.12-2.5.0/bin/kafka-topics.sh --create --zookeeper $5 --replication-factor $3 --partitions $4 --topic $2
+fi
+
+if [ "$1" == "list" ]; then
+#    echo "list"
+#    sleep 30
+    #./kafka_2.12-2.5.0/bin/kafka-topics.sh --list --zookeeper zk-cs.kafka.svc.cluster.local:2181
+    ./kafka_2.12-2.5.0/bin/kafka-topics.sh --list --zookeeper $5
+fi
+
+if [ "$1" == "delete" ]; then
+#    echo "delete"
+#    sleep 30
+    ./kafka_2.12-2.5.0/bin/kafka-topics.sh --zookeeper $5 --alter --topic $2 --config retention.ms=1000
+    ./kafka_2.12-2.5.0/bin/kafka-topics.sh --zookeeper $5 --delete --topic $2
+fi
+
+if [ "$1" != "list" ] && [ "$1" != "create" ]  && [ "$1" != "delete" ]; then
+    echo "This script is not configured for the input received"
+    echo "USAGE: start-coap-rep3 <method> <topic> <rep_factor> <num_part> <zookeeper>"
+    echo "USAGE: start-coap-rep3 <topic> <rep_factor> <num_part> <zookeeper>"
+    echo "method: create, list or delete"
+    echo "topic: any string without spaces"
+    echo "rep_factor: a number that the cluster is capable of handling"
+    echo "zookeeper: the address of the zookeeper"
+fi
+
+
+
+
+

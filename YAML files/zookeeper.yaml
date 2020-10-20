@@ -1,0 +1,165 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: zk
+    name: zk-hs
+  spec:
+    clusterIP: None
+    ports:
+    - name: server
+      port: 2888
+      protocol: TCP
+      targetPort: 2888
+    - name: leader-election
+      port: 3888
+      protocol: TCP
+      targetPort: 3888
+    selector:
+      app: zk
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: zk
+    name: zk-cs
+  spec:
+    ports:
+    - name: client
+      port: 2181
+      protocol: TCP
+      targetPort: 2181
+    selector:
+      app: zk
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: zk
+    name: zk
+  spec:
+    podManagementPolicy: Parallel
+    replicas: 3
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: zk
+    serviceName: zk-hs
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: zk
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - zk
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - command:
+          - sh
+          - -c
+          - " mkdir /root/proxy/dataDir;
+    sed -i '/dataDir/c dataDir=/root/proxy/dataDir' kafka_2.12-2.5.0/config/zookeeper.properties;
+    echo ${HOSTNAME##*-} > /root/proxy/dataDir/myid;
+    echo 'servers=3' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+    echo 'tickTime=2000' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+    echo 'clientPort=2181' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+    echo 'maxClientCnxns=60' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+    echo 'initLimit=100' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+    echo 'syncLimit=5' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+      echo 'server.0=zk-0.zk-hs.kafka.svc.cluster.local:2888:3888' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+      echo 'server.1=zk-1.zk-hs.kafka.svc.cluster.local:2888:3888' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+      echo 'server.2=zk-2.zk-hs.kafka.svc.cluster.local:2888:3888' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+      echo 'delete.topic.enable=true' >> kafka_2.12-2.5.0/config/zookeeper.properties;
+    ./kafka_2.12-2.5.0/bin/zookeeper-server-start.sh ./kafka_2.12-2.5.0/config/zookeeper.properties"
+          image: josesoares/proxy
+          imagePullPolicy: Always
+#          livenessProbe:
+#            exec:
+#              command:
+#              - sh
+#              - -c
+#              - zookeeper-ready 2181
+#            failureThreshold: 3
+#            initialDelaySeconds: 10
+#            periodSeconds: 10
+#            successThreshold: 1
+#            timeoutSeconds: 5
+          name: kubernetes-zookeeper
+          ports:
+          - containerPort: 2181
+            name: client
+            protocol: TCP
+          - containerPort: 2888
+            name: server
+            protocol: TCP
+          - containerPort: 3888
+            name: leader-election
+            protocol: TCP
+#          readinessProbe:
+#            exec:
+#              command:
+#              - sh
+#              - -c
+#              - zookeeper-ready 2181
+#            failureThreshold: 3
+#            initialDelaySeconds: 10
+#            periodSeconds: 10
+#            successThreshold: 1
+#            timeoutSeconds: 5
+#          resources:
+#            requests:
+#              cpu: 500m
+#              memory: 1Gi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /root/proxy/dataDir
+            name: datadir
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+#        securityContext:
+#          fsGroup: 1000
+#          runAsUser: 1000
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        creationTimestamp: null
+        name: datadir
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
+        volumeMode: Filesystem
+        storageClassName: standard
+  status:
+    replicas: 0
+kind: List
+metadata: {}

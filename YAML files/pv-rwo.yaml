@@ -1,0 +1,248 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv001
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv001"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv002
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv002"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv003
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv003"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv004
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv004"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv005
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv005"
+
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv006
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv006"
+
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv007
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv007"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv008
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv008"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv009
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv009"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv010
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv010"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv011
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv011"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv012
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv012"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv013
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv013"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv014
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv014"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv015
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv015"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv016
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/share/pv016"
