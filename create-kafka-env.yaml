@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Clean previous namespaces
+kubectl delete ns kafka
+kubectl delete ns metallb-system
+
+# Clean all previous persistent claims and persistant volumes
+kubectl delete -n kafka persistentvolumeclaim --all
+kubectl delete persistentvolume --all
+
+# Create metalLB
+kubectl apply -f metal/metallb-create-ns-v0.9.3.yaml
+kubectl apply -f metal/metallb-v0.9.3.yaml
+kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+kubectl apply -f metal/metalLB-layer2-config.yaml
+
+#create namespace
+kubectl create ns kafka
+
+#create persistente volume to keep data
+kubectl apply -f pv-rwo.yaml -n kafka
+
+#install zookeeper to coordenate kafka servers
+#kubectl delete -f zookeeper.yaml -n kafka
+kubectl apply -f zookeeper.yaml -n kafka
+sleep 30
+
+#install kafka servers
+#kubectl delete -f kafka.yaml -n kafka
+kubectl apply -f kafka.yaml -n kafka
+sleep 30
+
+#Create a mosquitto broker to handle in and out MQTT messages
+#kubectl delete -f mosquitto-in.yaml -n kafka
+kubectl apply -f mosquitto-in.yaml -n kafka
+#sleep 30
+#kubectl delete -f mosquitto-out.yaml -n kafka
+kubectl apply -f mosquitto-out.yaml -n kafka
+
+#create in and out services
+kubectl expose deployment mosquitto-deployment-in --type=LoadBalancer --name=mosquitto-service-in -n kafka
+kubectl expose deployment mosquitto-deployment-out --port=1884,7000 --type=LoadBalancer --name=mosquitto-service-out -n kafka
+
+#Create a rest server to handle in and out REST messages
+#kubectl delete -f rest-api.yaml -n kafka
+kubectl apply -f rest-api.yaml -n kafka
+
+#create rest external service
+kubectl expose deployment rest-deployment --type=LoadBalancer --name=rest-external-service -n kafka
+
+#Create a coap server to handle in and out CoAP messages
+#kubectl delete -f coap.yaml -n kafka
+kubectl apply -f coap.yaml -n kafka
+
+#create in and out services
+kubectl expose deployment coap-deployment --type=LoadBalancer --name=coap-external-service -n kafka
+
+# Create controller to be able to deal with some topic aspects from inside the cluster
+kubectl apply -f controller.yaml -n kafka
+
+
+sleep 5
+echo "IP for incomming MQTT data"
+kubectl get svc -n kafka | grep "mosquitto-service-in"
+echo ""
+echo "IP for outgoing MQTT data"
+kubectl get svc -n kafka | grep "mosquitto-service-out"
+echo ""
+echo "IP for incomming and outgoing REST data"
+kubectl get svc -n kafka | grep "rest-external-service"
+echo ""
+echo "IP for incomming and outgoing CoAP data"
+kubectl get svc -n kafka | grep "coap-external-service"
+
+echo ""
+echo "Monitor started"
+../k8s_node_monitor/node_monitor &
+echo $!
+
+#to check previous started processes use: "ps fjx"
